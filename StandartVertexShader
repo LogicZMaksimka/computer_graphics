@@ -1,0 +1,8 @@
+#version 330 core
+layout(location = 0) in vec3 model_space_vertex_position; // position of vertex from vertex buffer
+
+uniform mat4 mvp_matrix;
+
+void main() {
+    gl_Position = mvp_matrix * vec4(model_space_vertex_position, 1.0);
+}

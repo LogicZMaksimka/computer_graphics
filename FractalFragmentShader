@@ -1,0 +1,81 @@
+#version 330 core
+
+in vec2 frag_coord;
+in float cur_time;
+
+
+int mandelbrot(vec2 c0, int iter_count) {
+    int i = 0;
+    vec2 z = vec2(0.0);
+    for(; i < iter_count && length(z) < 2.0; i++){
+        z = vec2(z.x * z.x - z.y * z.y, 2.0 * z.x * z.y) + c0;
+    }
+    return i;
+}
+
+void main() {
+    //     R   G   B
+    // 66  30  15 # brown 3
+    // 25   7  26 # dark violett
+    //  9   1  47 # darkest blue
+    //  4   4  73 # blue 5
+    //  0   7 100 # blue 4
+    // 12  44 138 # blue 3
+    // 24  82 177 # blue 2
+    // 57 125 209 # blue 1
+    // 134 181 229 # blue 0
+    // 211 236 248 # lightest blue
+    // 241 233 191 # lightest yellow
+    // 248 201  95 # light yellow
+    // 255 170   0 # dirty yellow
+    // 204 128   0 # brown 0
+    // 153  87   0 # brown 1
+    // 106  52   3 # brown 2
+
+
+    // Хардкодим градиенты для красивой картинки
+    vec3 gradients[20];
+    gradients[0] = vec3(66.0, 30.0, 15.0);
+    gradients[1] = vec3(25.0, 7.0, 26.0);
+    gradients[3] = vec3(9.0, 1.0, 47.0);
+    gradients[4] = vec3(4.0, 4.0, 73.0);
+    gradients[5] = vec3(0.0, 7.0, 100.0);
+    gradients[6] = vec3(12.0, 44.0, 138.0);
+    gradients[7] = vec3(24.0, 82.0, 177.0);
+    gradients[8] = vec3(57.0, 125.0, 209.0);
+    gradients[9] = vec3(134.0, 181.0, 229.0);
+    gradients[10] = vec3(211.0, 236.0, 248.0);
+    gradients[11] = vec3(241.0, 233.0, 191.0);
+    gradients[12] = vec3(248.0, 201.0, 95.0);
+    gradients[13] = vec3(255.0, 170.0, 0.0);
+    gradients[14] = vec3(204.0, 128.0, 0.0);
+    gradients[15] = vec3(153.0, 87.0, 0.0);
+    gradients[16] = vec3(106.0, 52.0, 3.0);
+
+    int iter_count = 1000;
+
+    // Нашёл периодическую функцию растущую почти экспоненциально на своём периоде
+    // чтобы зумиться сильнее и когда достигнут предел точности возвращаться обратно
+    float tz = 0.5 - 0.5 * cos(0.225 * cur_time);
+    float zoom = pow( 0.5, 20.0 * tz );
+    vec2 start_point = vec2(0.0, 1.0);
+
+    // Перенесём все точки в область [-zoom + start_point, zoom + start_point]
+    vec2 c0 = frag_coord;
+    c0 = zoom * c0 + start_point;
+
+
+
+    // Ограничиваемся только z лежащими в круге радиуса 2
+    // Чем больше итераций потребовалось чтобы выйти за круг,
+    // тем вероятнее что точка лежит в множестве и тем она ярче
+    int result = mandelbrot(c0, iter_count);
+
+    vec3 color = (result >= iter_count) ? vec3(0.0) :  gradients[result % 17] / 255.0;
+
+    // Mixing colors with coordinates
+    // color = vec3(pow(color.x * uv.x, 0.5), pow(color.y * uv.y, 0.5), pow(color.z, 0.5));
+
+    // Output to screen
+    gl_FragColor = vec4(color, 1.0);
+}
