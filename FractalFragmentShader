@@ -56,9 +56,9 @@ void main() {
 
     // Нашёл периодическую функцию растущую почти экспоненциально на своём периоде
     // чтобы зумиться сильнее и когда достигнут предел точности возвращаться обратно
-    float tz = 0.5 - 0.5 * cos(0.225 * cur_time);
+    float tz = 0.4 - 0.5 * cos(0.225 * cur_time);
     float zoom = pow( 0.5, 20.0 * tz );
-    vec2 start_point = vec2(0.0, 1.0);
+    vec2 start_point = vec2(-0.745, 0.186);
 
     // Перенесём все точки в область [-zoom + start_point, zoom + start_point]
     vec2 c0 = frag_coord;
@@ -72,9 +72,6 @@ void main() {
     int result = mandelbrot(c0, iter_count);
 
     vec3 color = (result >= iter_count) ? vec3(0.0) :  gradients[result % 17] / 255.0;
-
-    // Mixing colors with coordinates
-    // color = vec3(pow(color.x * uv.x, 0.5), pow(color.y * uv.y, 0.5), pow(color.z, 0.5));
 
     // Output to screen
     gl_FragColor = vec4(color, 1.0);
