@@ -1,0 +1,14 @@
+#version 330 core
+layout(location = 0) in vec3 model_space_vertex_position; // position of vertex from vertex buffer
+
+uniform mat4 mvp_matrix;
+uniform float time;
+
+out vec2 frag_coord;
+out float cur_time;
+
+void main() {
+    gl_Position = mvp_matrix * vec4(model_space_vertex_position, 1.0);
+    frag_coord = model_space_vertex_position.xy;
+    cur_time = time;
+}
